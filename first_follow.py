@@ -118,3 +118,43 @@ def compute_first(grammar):
                         changed = True
 
     return first
+
+# FOLLOW
+
+def compute_follow(grammar, first, start_symbol):
+    non_terminals = set(grammar.keys())
+    follow = {nt: set() for nt in non_terminals}
+
+    follow[start_symbol].add(END_MARKER)
+
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for production in productions:
+                for i, symbol in enumerate(production):
+                    if symbol not in non_terminals:
+                        continue
+
+                    beta = production[i + 1:]
+
+                    if beta:
+                        first_beta = first_of_string(beta, first, non_terminals)
+
+                        before = len(follow[symbol])
+                        follow[symbol].update(first_beta - {EPSILON})
+                        if len(follow[symbol]) > before:
+                            changed = True
+
+                        if EPSILON in first_beta:
+                            before = len(follow[symbol])
+                            follow[symbol].update(follow[nt])
+                            if len(follow[symbol]) > before:
+                                changed = True
+                    else:
+                        before = len(follow[symbol])
+                        follow[symbol].update(follow[nt])
+                        if len(follow[symbol]) > before:
+                            changed = True
+
+    return follow
