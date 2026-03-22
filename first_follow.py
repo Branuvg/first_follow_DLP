@@ -158,3 +158,30 @@ def compute_follow(grammar, first, start_symbol):
                             changed = True
 
     return follow
+
+# Detección de conflictos LL(1)
+
+def check_ll1(grammar, first, follow):
+    non_terminals = set(grammar.keys())
+    conflicts = []
+
+    for nt, productions in grammar.items():
+        selection_sets = []
+        for prod in productions:
+            if prod == [EPSILON]:
+                sel = follow[nt].copy()
+            else:
+                fs = first_of_string(prod, first, non_terminals)
+                sel = fs - {EPSILON}
+                if EPSILON in fs:
+                    sel.update(follow[nt])
+            selection_sets.append((prod, sel))
+
+        for i in range(len(selection_sets)):
+            for j in range(i + 1, len(selection_sets)):
+                inter = selection_sets[i][1] & selection_sets[j][1]
+                if inter:
+                    conflicts.append((nt, selection_sets[i][0],
+                                          selection_sets[j][0], inter))
+
+    return conflicts
