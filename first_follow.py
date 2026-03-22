@@ -185,3 +185,67 @@ def check_ll1(grammar, first, follow):
                                           selection_sets[j][0], inter))
 
     return conflicts
+
+
+# Print
+
+def fmt_set(s):
+    items = sorted(s, key=lambda x: (x == '$', x == EPSILON, x))
+    return "{ " + ", ".join(items) + " }"
+
+def print_grammar(grammar):
+    print("\nGramática cargada:")
+    for nt, prods in grammar.items():
+        rhs = "  |  ".join(" ".join(p) for p in prods)
+        print(f"  {nt:<3}  →   {rhs}")
+    print()
+
+def print_results(grammar, first, follow):
+    nts = list(grammar.keys())
+    col = 32
+
+    print(f"  {'No Terminal':<14} {'FIRST':<{col}} {'FOLLOW'}")
+    print("  " + "─"*72)
+    for nt in nts:
+        f1 = fmt_set(first[nt])
+        f2 = fmt_set(follow[nt])
+        print(f"  {nt:<14} {f1:<{col}} {f2}")
+
+def print_ll1_report(conflicts):
+    if not conflicts:
+        print("\nLa gramática ES LL(1) — sin conflictos.\n")
+    else:
+        print("\nLa gramática NO es LL(1) — conflictos detectados:\n")
+        for nt, p1, p2, inter in conflicts:
+            prod1 = " ".join(p1)
+            prod2 = " ".join(p2)
+            tokens = ", ".join(sorted(inter))
+            print(f"     • {nt}: conflicto en {{ {tokens} }}")
+            print(f"          {nt} → {prod1}")
+            print(f"          {nt} → {prod2}\n")
+
+# Main
+
+def main():
+    if len(sys.argv) >= 2:
+        filepath = sys.argv[1]
+    else:
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gramatica_clase.txt')
+
+    grammar, start_symbol = load_grammar(filepath)
+
+    print(f"Símbolo inicial: {start_symbol}")
+    print_grammar(grammar)
+
+    first  = compute_first(grammar)
+    follow = compute_follow(grammar, first, start_symbol)
+
+    print("Resultados:\n")
+    print_results(grammar, first, follow)
+
+    conflicts = check_ll1(grammar, first, follow)
+    print_ll1_report(conflicts)
+
+
+if __name__ == "__main__":
+    main()
