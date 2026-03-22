@@ -80,3 +80,41 @@ def first_of_string(symbols, first, non_terminals):
             return result
     result.add(EPSILON)
     return result
+
+# FIRST
+
+def compute_first(grammar):
+    non_terminals = set(grammar.keys())
+    first = {nt: set() for nt in non_terminals}
+
+    changed = True
+    while changed:
+        changed = False
+        for nt, productions in grammar.items():
+            for production in productions:
+
+                if production == [EPSILON]:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+                    continue
+
+                for symbol in production:
+                    if is_terminal(symbol, non_terminals):
+                        if symbol not in first[nt]:
+                            first[nt].add(symbol)
+                            changed = True
+                        break
+                    else:
+                        before = len(first[nt])
+                        first[nt].update(first[symbol] - {EPSILON})
+                        if len(first[nt]) > before:
+                            changed = True
+                        if EPSILON not in first[symbol]:
+                            break
+                else:
+                    if EPSILON not in first[nt]:
+                        first[nt].add(EPSILON)
+                        changed = True
+
+    return first
