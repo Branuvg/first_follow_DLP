@@ -61,3 +61,22 @@ def load_grammar(filepath):
             ordered[nt] = grammar[nt]
 
     return ordered, start_symbol
+
+    # Utilidades
+
+def is_terminal(symbol, non_terminals):
+    return symbol not in non_terminals and symbol != EPSILON
+
+
+def first_of_string(symbols, first, non_terminals):
+    """FIRST de una secuencia de símbolos."""
+    result = set()
+    for symbol in symbols:
+        if is_terminal(symbol, non_terminals):
+            result.add(symbol)
+            return result
+        result.update(first[symbol] - {EPSILON})
+        if EPSILON not in first[symbol]:
+            return result
+    result.add(EPSILON)
+    return result
