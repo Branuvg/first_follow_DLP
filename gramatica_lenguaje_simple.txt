@@ -1,0 +1,13 @@
+# Gramática de asignaciones y expresiones booleanas/relacionales
+# Similar a lo que podría verse en un lenguaje simple tipo Pascal
+
+START P
+
+P  -> S P'
+P' -> ; S P' | eps
+S  -> id := E | if E then S | while E do S | begin P end
+E  -> T E'
+E' -> + T E' | - T E' | eps
+T  -> F T'
+T' -> * F T' | eps
+F  -> ( E ) | id | num

@@ -1,0 +1,15 @@
+# Gramática del PDF de clase
+# Formato:
+#   - Líneas con '#' son comentarios
+#   - Primera línea no comentario es el símbolo inicial
+#   - Producciones: NoTerminal -> simbolo1 simbolo2 | simbolo3 simbolo4
+#   - Epsilon se escribe como: eps
+#   - Los no terminales con prima se escriben con comilla: E'
+
+START E
+
+E  -> T E'
+E' -> + T E' | eps
+T  -> F T'
+T' -> * F T' | eps
+F  -> ( E ) | id

@@ -1,0 +1,8 @@
+# Gramática simple de expresiones aritméticas (sin primas, más básica)
+# Esta gramática ES ambigua (no es LL(1)), útil para ver conflictos
+
+START E
+
+E -> E + T | E - T | T
+T -> T * F | T / F | F
+F -> ( E ) | num | id
